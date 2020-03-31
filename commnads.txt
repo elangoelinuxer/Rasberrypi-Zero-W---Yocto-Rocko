@@ -1,0 +1,17 @@
+
+Kernel Source location:
+tmp/work-shared/raspberrypi0-wifi/kernel-source
+
+Only Kernel Recompile:
+bitbake -C compile virtual/kernel
+
+and do package of sdcard image again
+bitbake core-image-minimal
+
+use,
+sudo dd bs=4M if=core-image-minimal-raspberrypi0-wifi-20200331170429.rootfs.rpi-sdimg  of=/dev/sdb conv=fsync
+
+
+
+
+
