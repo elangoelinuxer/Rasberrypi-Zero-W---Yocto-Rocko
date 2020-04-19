@@ -19,9 +19,21 @@ bitbake core-image-minimal -f
 cleansstate
 bitbake virtual/kernel -c cleansstate
 
+clean
+bitbake virtual/kernel -c clean
+
 
 deploy into image
  bitbake -c deploy linux-raspberrypi
+
+save defconfig
+bitbake -c savedefconfig virtual/kernel
+
+->config will be saved to 
+build_rpi/tmp/work/raspberrypi0_wifi-poky-linux-gnueabi/linux-raspberrypi/1_4.12.14+gitAUTOINC+6fe4193dd9-r0/linux-raspberrypi0_wifi-standard-build/defconfig
+
+
+-> use the above defconfig  in kernel bb  append file using KERNEL_DEFCONFIG
 
 
 
@@ -74,16 +86,50 @@ KERNEL_DEVICETREE ?=
 Document - upgrade kernel from 4.9 to 4.12
 //----------------------------------------------------------
 
+kernel config
+enable i2c char dev to use userspace tools 
+enable ov5647 driver
+bitbake compile
+bitbake deploy
+bitbake core-image-minimal
+copy modules tar to filesystem
 
 
+//--------------------------------------------------------
+adding own kernel config to kernel
 
+bitbake linux-yocto -c diffconfig
+
+cp the generated .cfg to  linux-raspberrypi-4.12  directory  and  add following in .bbappend
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/linux-raspberrypi:"
+SRC_URI  += "file://config_diff.cfg"
+
+do_configure_append() {
+    cat ${WORKDIR}/*.cfg >> ${B}/.config
+}
 
 
 //----------------------------------------------------------
 
+config.txt
 
+enable all i2c params 0 and 1
+pass ov5647 overlay param
+dtoverlay=ov5647,param=i2c_pins_28_29
+dtdebug=1  //to debug device tree loading
 
+userspace device tree debug
+vcdbg log msg
 
+//---------------------------------------------------------
+
+add 
+conf/local.conf file.
+
+CORE_IMAGE_EXTRA_INSTALL += " kernel-modules"
+
+//-----------------------------------------------------
 
 
 
