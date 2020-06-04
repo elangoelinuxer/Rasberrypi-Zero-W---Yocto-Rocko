@@ -1,0 +1,90 @@
+From af631631a016997a2e03b675dece4c052bfca22a Mon Sep 17 00:00:00 2001
+From: elangoelinuxer <ela.ece76@gmail.com>
+Date: Sat, 25 Apr 2020 14:11:44 +0530
+Subject: [PATCH] Ov5647 debug
+
+---
+ drivers/media/i2c/ov5647.c         | 12 ++++++++----
+ drivers/media/v4l2-core/v4l2-dev.c |  3 ++-
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/media/i2c/ov5647.c b/drivers/media/i2c/ov5647.c
+index 561e2b7..d8d5fb1 100644
+--- a/drivers/media/i2c/ov5647.c
++++ b/drivers/media/i2c/ov5647.c
+@@ -512,6 +512,7 @@ static int ov5647_parse_dt(struct device_node *np)
+ {
+ 	struct v4l2_of_endpoint bus_cfg;
+ 	struct device_node *ep;
++	dev_dbg( "EL47: OmniVision OV5647 camera parse dt\n");
+ 
+ 	int ret;
+ 
+@@ -534,6 +535,8 @@ static int ov5647_probe(struct i2c_client *client,
+ 	struct v4l2_subdev *sd;
+ 	struct device_node *np = client->dev.of_node;
+ 	u32 xclk_freq;
++	
++	printk("EL47: OmniVision OV5647 camera driver probed\n");
+ 
+ 	sensor = devm_kzalloc(dev, sizeof(*sensor), GFP_KERNEL);
+ 	if (!sensor)
+@@ -542,7 +545,7 @@ static int ov5647_probe(struct i2c_client *client,
+ 	if (IS_ENABLED(CONFIG_OF) && np) {
+ 		ret = ov5647_parse_dt(np);
+ 		if (ret) {
+-			dev_dbg(dev, "DT parsing error: %d\n", ret);
++			dev_dbg(dev, "EL47: DT parsing error: %d\n", ret);
+ 			return ret;
+ 		}
+ 	}
+@@ -550,13 +553,13 @@ static int ov5647_probe(struct i2c_client *client,
+ 	/* get system clock (xclk) */
+ 	sensor->xclk = devm_clk_get(dev, NULL);
+ 	if (IS_ERR(sensor->xclk)) {
+-		dev_dbg(dev, "could not get xclk");
++		dev_dbg(dev, "EL47: could not get xclk");
+ 		return PTR_ERR(sensor->xclk);
+ 	}
+ 
+ 	xclk_freq = clk_get_rate(sensor->xclk);
+ 	if (xclk_freq != 25000000) {
+-		dev_dbg(dev, "Unsupported clock frequency: %u\n", xclk_freq);
++		dev_dbg(dev, "EL47: Unsupported clock frequency: %u\n", xclk_freq);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -581,7 +584,7 @@ static int ov5647_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		goto error;
+ 
+-	dev_dbg(dev, "OmniVision OV5647 camera driver probed\n");
++	dev_dbg(dev, "EL47: OmniVision OV5647 camera driver probed\n");
+ 	return 0;
+ error:
+ 	media_entity_cleanup(&sd->entity);
+@@ -594,6 +597,7 @@ static int ov5647_remove(struct i2c_client *client)
+ {
+ 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
+ 	struct ov5647 *ov5647 = to_state(sd);
++	dev_dbg("EL47: OmniVision OV5647 camera driver removed\n");
+ 
+ 	v4l2_async_unregister_subdev(&ov5647->sd);
+ 	media_entity_cleanup(&ov5647->sd.entity);
+diff --git a/drivers/media/v4l2-core/v4l2-dev.c b/drivers/media/v4l2-core/v4l2-dev.c
+index c647ba6..b772c1d 100644
+--- a/drivers/media/v4l2-core/v4l2-dev.c
++++ b/drivers/media/v4l2-core/v4l2-dev.c
+@@ -1037,7 +1037,8 @@ static int __init videodev_init(void)
+ 	dev_t dev = MKDEV(VIDEO_MAJOR, 0);
+ 	int ret;
+ 
+-	printk(KERN_INFO "Linux video capture interface: v2.00\n");
++	printk(KERN_INFO "EL47: Linux video capture interface: v2.00\n");
++        dump_stack();
+ 	ret = register_chrdev_region(dev, VIDEO_NUM_DEVICES, VIDEO_NAME);
+ 	if (ret < 0) {
+ 		printk(KERN_WARNING "videodev: unable to get major %d\n",
+-- 
+2.7.4
+

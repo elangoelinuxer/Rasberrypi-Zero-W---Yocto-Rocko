@@ -1,0 +1,26 @@
+From 0cf6e51e1a58c321679d6a6f1d4462eb77fb160f Mon Sep 17 00:00:00 2001
+From: elangoelinuxer <ela.ece76@gmail.com>
+Date: Thu, 9 Apr 2020 08:11:43 +0530
+Subject: [PATCH] Removed bcm2708-rpi-b-plus.dtb
+
+---
+ arch/arm/boot/dts/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index a4cdecb..57a4948 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1,8 +1,8 @@
+ ifeq ($(CONFIG_OF),y)
+ 
++#	bcm2708-rpi-b-plus.dtb  \ 
+ dtb-$(CONFIG_ARCH_BCM2835) += \
+ 	bcm2708-rpi-b.dtb \
+-	bcm2708-rpi-b-plus.dtb \
+ 	bcm2708-rpi-cm.dtb \
+ 	bcm2708-rpi-0-w.dtb \
+ 	bcm2709-rpi-2-b.dtb \
+-- 
+2.7.4
+

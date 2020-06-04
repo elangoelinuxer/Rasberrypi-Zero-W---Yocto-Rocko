@@ -1,0 +1,100 @@
+From 5c7ce6d980a55e38e2e9869b58b1ac56864f6510 Mon Sep 17 00:00:00 2001
+From: elangoelinuxer <ela.ece76@gmail.com>
+Date: Sat, 25 Apr 2020 11:35:06 +0530
+Subject: [PATCH] Ov5647 debug messages
+
+---
+ drivers/media/i2c/ov5647.c | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/media/i2c/ov5647.c b/drivers/media/i2c/ov5647.c
+index f57a0b3..561e2b7 100644
+--- a/drivers/media/i2c/ov5647.c
++++ b/drivers/media/i2c/ov5647.c
+@@ -300,7 +300,7 @@ static int __sensor_init(struct v4l2_subdev *sd)
+ 	ret = ov5647_write_array(sd, ov5647_640x480,
+ 					ARRAY_SIZE(ov5647_640x480));
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "write sensor default regs error\n");
++		dev_dbg(&client->dev, "write sensor default regs error\n");
+ 		return ret;
+ 	}
+ 
+@@ -313,7 +313,7 @@ static int __sensor_init(struct v4l2_subdev *sd)
+ 		return ret;
+ 
+ 	if (!(resetval & 0x01)) {
+-		dev_err(&client->dev, "Device was in SW standby");
++		dev_dbg(&client->dev, "Device was in SW standby");
+ 		ret = ov5647_write(sd, 0x0100, 0x01);
+ 		if (ret < 0)
+ 			return ret;
+@@ -335,7 +335,7 @@ static int ov5647_sensor_power(struct v4l2_subdev *sd, int on)
+ 
+ 		ret = clk_prepare_enable(ov5647->xclk);
+ 		if (ret < 0) {
+-			dev_err(&client->dev, "clk prepare enable failed\n");
++			dev_dbg(&client->dev, "clk prepare enable failed\n");
+ 			goto out;
+ 		}
+ 
+@@ -343,7 +343,7 @@ static int ov5647_sensor_power(struct v4l2_subdev *sd, int on)
+ 				ARRAY_SIZE(sensor_oe_enable_regs));
+ 		if (ret < 0) {
+ 			clk_disable_unprepare(ov5647->xclk);
+-			dev_err(&client->dev,
++			dev_dbg(&client->dev,
+ 				"write sensor_oe_enable_regs error\n");
+ 			goto out;
+ 		}
+@@ -351,7 +351,7 @@ static int ov5647_sensor_power(struct v4l2_subdev *sd, int on)
+ 		ret = __sensor_init(sd);
+ 		if (ret < 0) {
+ 			clk_disable_unprepare(ov5647->xclk);
+-			dev_err(&client->dev,
++			dev_dbg(&client->dev,
+ 				"Camera not available, check Power\n");
+ 			goto out;
+ 		}
+@@ -542,7 +542,7 @@ static int ov5647_probe(struct i2c_client *client,
+ 	if (IS_ENABLED(CONFIG_OF) && np) {
+ 		ret = ov5647_parse_dt(np);
+ 		if (ret) {
+-			dev_err(dev, "DT parsing error: %d\n", ret);
++			dev_dbg(dev, "DT parsing error: %d\n", ret);
+ 			return ret;
+ 		}
+ 	}
+@@ -550,13 +550,13 @@ static int ov5647_probe(struct i2c_client *client,
+ 	/* get system clock (xclk) */
+ 	sensor->xclk = devm_clk_get(dev, NULL);
+ 	if (IS_ERR(sensor->xclk)) {
+-		dev_err(dev, "could not get xclk");
++		dev_dbg(dev, "could not get xclk");
+ 		return PTR_ERR(sensor->xclk);
+ 	}
+ 
+ 	xclk_freq = clk_get_rate(sensor->xclk);
+ 	if (xclk_freq != 25000000) {
+-		dev_err(dev, "Unsupported clock frequency: %u\n", xclk_freq);
++		dev_dbg(dev, "Unsupported clock frequency: %u\n", xclk_freq);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -609,13 +609,11 @@ static const struct i2c_device_id ov5647_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, ov5647_id);
+ 
+-#if IS_ENABLED(CONFIG_OF)
+ static const struct of_device_id ov5647_of_match[] = {
+ 	{ .compatible = "ovti,ov5647" },
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, ov5647_of_match);
+-#endif
+ 
+ static struct i2c_driver ov5647_driver = {
+ 	.driver = {
+-- 
+2.7.4
+
