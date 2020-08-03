@@ -45,7 +45,13 @@ add i2c tool:
 /meta/recipes-core/images/core-image-minimal.bb
 CORE_IMAGE_EXTRA_INSTALL += "i2c-tools"
 
+
+
 bitbake i2c-tools  //to cross check only the tool
+
+
+add raspistill:
+CORE_IMAGE_EXTRA_INSTALL +=  "userland"
 
 
 
@@ -55,8 +61,22 @@ add i2c-dev driver to get /dev/i2c-1     //I2C_CHAR_DRIVER
 
 Prebuild Refernce:
 
+Motionos:
 https://dantheiotman.com/2017/08/14/creating-a-surveillance-camera-using-a-pi-zero-w-motioneyeos/
 https://github.com/ccrisan/motioneyeos/releases/tag/20200203
+
+RaspianOS:
+https://www.raspberrypi.org/documentation/installation/installing-images/README.md
+
+using camera in raspianOS:
+1. flash img using dd command
+2. enable_uart=1 in config.txt
+3. boot to the OS (it will take time to get login prompt)
+4. run raspi-config and enable camera and reboot
+5. raspistill -o test.img
+6. analyse config.txt
+
+
 
 
 
@@ -130,6 +150,20 @@ conf/local.conf file.
 CORE_IMAGE_EXTRA_INSTALL += " kernel-modules"
 
 //-----------------------------------------------------
+to enable uImage //just to play with u-boot  
+
+enable KERNEL_IMAGETYPE = "uImage"
+
+in ./meta-raspberrypi/conf/machine/raspberrypi0-wifi.conf
+
+
+in local.conf
+RPI_USE_U_BOOT = "1"  // to enable uboot for rpi 
+
+
+//--------------------------------------------------------
+
+
 
 
 
